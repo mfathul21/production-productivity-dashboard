@@ -1,0 +1,35 @@
+-- Total Batch
+Total Batch = 
+    IF(
+        ISBLANK(
+            COUNT('public line_productivity'[Batch])), 
+            0, 
+            COUNT('public line_productivity'[Batch])
+    )
+
+
+-- Avg Production Time
+Avg Production Time = 
+    AVERAGEX(
+        'public line_productivity', 
+        DATEDIFF(
+            'public line_productivity'[Start Time],
+            IF(
+                'public line_productivity'[End Time] < 'public line_productivity'[Start Time],
+                'public line_productivity'[End Time] + 1, 
+                'public line_productivity'[End Time]
+            ),
+            MINUTE
+        )
+    )
+
+
+-- Efficiency Percentage
+Efficiency_Percentage = 
+    DIVIDE(
+        [Avg Production Time], 
+        AVERAGE('public products'[Min batch time]), 
+        0
+    )
+
+

@@ -1,0 +1,37 @@
+-- Total Downtime
+Total Downtime = 
+    COUNT('public line_downtime'[Duration])
+
+
+-- Total Downtime Duration
+Total Downtime Duration = 
+    SUM('public line_downtime'[Duration])
+
+
+-- Avg Downtime Duration Per Batch
+Avg Downtime Duration Per Batch = 
+    AVERAGEX('public line_downtime', 'public line_downtime'[Duration])
+
+
+-- Operator Error Downtime
+Operator Error Downtime = 
+   IF(
+        ISBLANK(DIVIDE(
+            SUMX(
+                FILTER('public line_downtime', RELATED('public downtime_factors'[Operator Error]) = "Yes"),
+                'public line_downtime'[Duration]
+            ),
+            [Total Downtime Duration],
+            0
+        )
+    ), 
+    0, 
+    DIVIDE(
+            SUMX(
+                FILTER('public line_downtime', RELATED('public downtime_factors'[Operator Error]) = "Yes"),
+                'public line_downtime'[Duration]
+            ),
+            [Total Downtime Duration],
+            0
+        )
+    )
